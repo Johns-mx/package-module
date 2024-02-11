@@ -1,0 +1,16 @@
+{
+    "project": "BPA (Bank of Pending Actions)",
+    "version": "v1.0.0",
+    "pending_packages": [
+        {
+            "uuid": 1,
+            "date": "2024-02-10 19:31:39.225692",
+            "name": "Pending package 2024-02-10",
+            "from": null,
+            "destiny": null,
+            "actions": [""],
+            "action_type": "action.get",
+            "package": {}
+        }
+    ]
+}
