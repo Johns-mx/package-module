@@ -3,32 +3,49 @@
     "version": "1.0.0",
     "pending_packages": [
         {
-            "uuid": "c7f2edb4-b110-5045-b497-f9c19fcc20f4",
-            "description": "Este package es 2",
-            "date": "2024-02-12T02:46:32.629106",
+            "uuid": "e14a50f6-00fb-5519-89d8-9c2cc3e4a6b6",
+            "description": "Package 12/02/2024",
+            "date": "2024-02-12T13:07:11.607586",
             "destiny": "./",
             "actions": [
-                "action.post"
+                "users.select().where(users.c.userID == userID).first()"
             ],
-            "action_type": "post",
+            "action_type": "GET",
             "package": {
-                "nombre": "JMX",
-                "edad": 22
-            }
+                "users": [
+                    {
+                        "id": 1,
+                        "name": "John",
+                        "username": "johnmx"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Yordy",
+                        "username": "elyork"
+                    }
+                ]
+            },
+            "processed": false
         },
         {
-            "uuid": "c70f7f98-18d6-5922-af54-5ceae4933871",
-            "description": "Este package es 3",
-            "date": "2024-02-12T02:46:49.316736",
+            "uuid": "e4abca70-f1b6-5955-adc4-81cecc9d05ad",
+            "description": "2 Package 12/02/2024",
+            "date": "2024-02-12T13:07:33.622613",
             "destiny": "./",
             "actions": [
-                "action.post"
+                "users.select().where(users.c.userID == userID).first()"
             ],
-            "action_type": "post",
+            "action_type": "GET",
             "package": {
-                "nombre": "JMX",
-                "edad": 22
-            }
+                "users": [
+                    {
+                        "id": 1,
+                        "name": "Yordy",
+                        "username": "elyork"
+                    }
+                ]
+            },
+            "processed": false
         }
     ]
 }

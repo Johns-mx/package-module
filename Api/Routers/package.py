@@ -14,7 +14,8 @@ async def get_package():
 
 @package_router.get("/get_all")
 async def get_all_package():
-    pass
+    pack_manage= PackageManagement()
+    return await pack_manage.get_package()
 
 
 @package_router.post("/create")

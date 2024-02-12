@@ -2,3 +2,4 @@ vEnvPackageModule
 .env
 .vscode
 __pycache__
+bpa.json

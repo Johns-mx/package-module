@@ -8,22 +8,33 @@ from uuid import UUID
 class PackageModel(BaseModel):
     uuid: str
     description: str
-    date: datetime | str
+    date: Union[datetime, str]
     destiny: Optional[str]
     actions: list[str]= []
     action_type: str
     package: Optional[dict[str, Any]]= {}
 
 
-class BpaStoreModel(BaseModel):
-    BPA: Optional[dict[str, Any]] = None
+class PackageInternalModel(PackageModel):
+    processed: bool= False
 
 
 class PendingPackagesModel(BaseModel):
-    pending_packages: Optional[list]= []
+    pending_packages: Optional[list[PackageInternalModel]]= []
+
+
+class BpaStoreModel(BaseModel):
+    BPA: Optional[dict[str, Any]] = None
 
 
 class BpaModel(BaseModel):
     project: str= BPA_NAME
     version: str= BPA_VERSION
     pending_packages: list= []
+
+
+class ActionsType(BaseModel):
+    GET: str= "GET"
+    POST: str= "POST"
+    DELETE: str= "DELETE"
+    UPDATE: str= "UPDATE"
