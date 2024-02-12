@@ -54,9 +54,9 @@ class BpaManagement:
             PackageInternalModel(**package_data) for package_data in data_json.pending_packages
         ])
         for package in data_packages.pending_packages:
-            uuids_packages.append(package.uuid)
-            uuids_packages.append(package.processed)
-            uuids_packages.append(datetime.strptime(package.date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m-%d %H:%M:%S.%f"))
+            formated_date= datetime.strptime(package.date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m-%d %H:%M:%S.%f")
+            
+            uuids_packages.append({"uuid": package.uuid, "processed": package.processed, "date": formated_date})
         return uuids_packages
     
     async def sorting_out_packages(self):
