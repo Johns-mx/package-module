@@ -1,2 +1,4 @@
 vEnvPackageModule
 .env
+.vscode
+__pycache__

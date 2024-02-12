@@ -2,12 +2,13 @@ from typing import Any, Optional, Union
 from datetime import datetime
 from pydantic import BaseModel, Field
 from settings import BPA_VERSION, BPA_NAME
+from uuid import UUID
 
 
 class PackageModel(BaseModel):
     uuid: str
     description: str
-    date: datetime
+    date: datetime | str
     destiny: Optional[str]
     actions: list[str]= []
     action_type: str

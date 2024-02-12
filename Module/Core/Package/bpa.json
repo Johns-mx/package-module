@@ -1,15 +1,34 @@
 {
     "project": "BPA (Bank of Pending Actions)",
-    "version": "v1.0.0",
+    "version": "1.0.0",
     "pending_packages": [
         {
-            "uuid": 1,
-            "description": "Pending package 2024-02-10",
-            "date": "2024-02-10 19:31:39.225692",
-            "destiny": null,
-            "actions": [],
-            "action_type": "action.get",
-            "package": {}
+            "uuid": "c7f2edb4-b110-5045-b497-f9c19fcc20f4",
+            "description": "Este package es 2",
+            "date": "2024-02-12T02:46:32.629106",
+            "destiny": "./",
+            "actions": [
+                "action.post"
+            ],
+            "action_type": "post",
+            "package": {
+                "nombre": "JMX",
+                "edad": 22
+            }
+        },
+        {
+            "uuid": "c70f7f98-18d6-5922-af54-5ceae4933871",
+            "description": "Este package es 3",
+            "date": "2024-02-12T02:46:49.316736",
+            "destiny": "./",
+            "actions": [
+                "action.post"
+            ],
+            "action_type": "post",
+            "package": {
+                "nombre": "JMX",
+                "edad": 22
+            }
         }
     ]
 }
