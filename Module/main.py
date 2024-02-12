@@ -6,15 +6,14 @@ Modelo de Package:
     - date: datetime*
     - name: str *
     - from: str (path)*
-    - destiny: str (path)*
+    - destiny: str (path de la pc)*
     - actions: list[str]*
     - package: json (data)*
+
 
 Banco de acciones:
 : Este BPA es un archivo .json con el mismo nombre. El cual va a contener los packages pendientes (offline) que se enviaran al destino en cuanto se conecte a internet (online).
 """
 
 
-### BANCO DE ACCIONES PENDIENTES (Bank of Pending Actions = BPA)
-#Este ABk es un archivo .json con el mismo nombre.
 
