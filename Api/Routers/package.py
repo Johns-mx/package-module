@@ -9,11 +9,14 @@ package_router= APIRouter(prefix=f"/api/v{version.major}/package")
 
 @package_router.get("/get")
 async def get_package():
-    pass
+    #>> codigo solo de prueba
+    pack_manage= PackageManagement()
+    await pack_manage.processing_packages()
 
 
 @package_router.get("/get_all")
 async def get_all_package():
+    #>> codigo solo de prueba
     pack_manage= PackageManagement()
     return await pack_manage.get_package()
 

@@ -20,7 +20,7 @@ class PackageInternalModel(PackageModel):
 
 
 class PendingPackagesModel(BaseModel):
-    pending_packages: Optional[list[PackageInternalModel]]= []
+    pending_packages: Optional[list[PackageInternalModel]]
 
 
 class BpaStoreModel(BaseModel):

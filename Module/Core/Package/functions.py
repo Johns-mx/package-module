@@ -1,7 +1,7 @@
 """
 functions.py se encargara de almacenar las funciones que tengas conexion directa con el package, por ejemplo, para crear un package, obtener, envio, eliminacion. CRUD de package.
 """
-import uuid, json, os
+import uuid, json, os, time
 from datetime import datetime
 from settings import HASHING_UUID, PROJECT_NAME, BPA_VERSION, BPA_NAME
 from Module.Models.models import PackageModel, PendingPackagesModel, BpaModel, ActionsType, PackageInternalModel
@@ -13,6 +13,9 @@ class BpaManagement:
     
     async def config_exists_bpa(self):
         return os.path.exists(self.location_bpa)
+    
+    async def config_counting_packages(self, data_packages: PendingPackagesModel):
+        return len(data_packages.pending_packages)
     
     async def config_read_bpa(self):
         bpa_content = {
@@ -41,27 +44,40 @@ class BpaManagement:
         with open(self.location_bpa, 'w') as file:
             json.dump(dict(data_json), file, indent=4)
     
-    async def remove_pending_packages(self, package):
-        data_json = await self.config_read_bpa()
-        data_json.pending_packages.remove(package)
-        with open(self.location_bpa, 'w') as file:
-            json.dump(data_json, file, indent=4)
+    async def remove_pending_packages(self, structured_packages: list, package: PackageInternalModel):
+        structured_packages.remove(dict(package))
+        return structured_packages
     
     async def internal_structuring_pending_packages(self):
         data_json= await self.config_read_bpa()
-        uuids_packages: list= []
-        data_packages = PendingPackagesModel(pending_packages=[
+        structured_packages = PendingPackagesModel(pending_packages=[
             PackageInternalModel(**package_data) for package_data in data_json.pending_packages
         ])
-        for package in data_packages.pending_packages:
+        return data_json, structured_packages
+    
+    async def processing_package(self, package: PackageInternalModel):
+        return package.description.startswith("2")
+    
+    async def processing_every_package(self):
+        data_packages, structured_packages = await self.internal_structuring_pending_packages()
+        uuids_packages: list= []
+        
+        for package in structured_packages.pending_packages:
             formated_date= datetime.strptime(package.date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m-%d %H:%M:%S.%f")
             
-            uuids_packages.append({"uuid": package.uuid, "processed": package.processed, "date": formated_date})
-        return uuids_packages
+            #>> se guardan en uuids_packages
+            #uuids_packages.append({"uuid": package.uuid, "processed": package.processed, "date": formated_date})
+            #package.processed= True
+            
+            if package.processed == True:
+                print(package)
+                data_packages.pending_packages= await self.remove_pending_packages(data_packages.pending_packages, package)
+                
+                with open(self.location_bpa, 'w') as file:
+                    json.dump(dict(data_packages), file, indent=4)
     
     async def sorting_out_packages(self):
         """ LIFO (Last In First Out) """
-        data_json= await self.config_read_bpa()
 
 
 class PackageManagement:
@@ -76,6 +92,10 @@ class PackageManagement:
     
     async def config_exists_package(self):
         pass
+    
+    async def processing_packages(self):
+        bpa_instance= BpaManagement()
+        await bpa_instance.processing_every_package()
     
     async def create_new_package(self, description: str, actions: list, action_type: str, package: dict, destiny: str="./"):
         date=datetime.now()
