@@ -9,6 +9,7 @@ class PackageModel(BaseModel):
     uuid: str
     description: str
     date: Union[datetime, str]
+    date_of_actions: str
     destiny: Optional[str]
     actions: list[str]= []
     action_type: str

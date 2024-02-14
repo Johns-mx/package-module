@@ -4,6 +4,7 @@ Este sistema de package permitira que se guarden datos en el campo "package", es
 Modelo de Package:
     - idPackage: int (uuid)*
     - date: datetime*
+    - data_of_actions:
     - name: str *
     - from: str (path)*
     - destiny: str (path de la pc)*
@@ -13,6 +14,11 @@ Modelo de Package:
 
 Banco de acciones:
 : Este BPA es un archivo .json con el mismo nombre. El cual va a contener los packages pendientes (offline) que se enviaran al destino en cuanto se conecte a internet (online).
+
+
+
+
+Banco de acciones pendientes 
 """
 
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, Union
+from datetime import datetime
 
 
 class VersionProject(BaseModel):
@@ -11,6 +12,7 @@ class VersionProject(BaseModel):
 
 class PackageModel(BaseModel):
     description: str
+    date_of_actions: str
     actions: list[str]= []
     action_type: str
     package: Optional[dict[str, Any]]= {}

@@ -1,7 +1,27 @@
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from Api.Schemas.schemas import VersionProject
 
 
 def version_project():
-    version= VersionProject(ver="0.0.5", major=0, minor=0, patch=5)
+    version= VersionProject(ver="0.0.6", major=0, minor=0, patch=5)
     return version
 version= version_project()
+
+
+#>> Metodo para enviar respuesta ~
+def response_model_error(status_code: str, error: bool, message: str, res, headers=None):
+    response_headers = {"Content-Type": "application/json"}
+    if headers:
+        response_headers.update(headers)
+
+    return JSONResponse(
+        status_code=status_code,
+        headers=response_headers,
+        content=jsonable_encoder({
+            "error": error,
+            "message": message,
+            "res": res,
+            "version": f"v{version.ver}"
+        })
+    )

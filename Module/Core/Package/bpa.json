@@ -1,5 +1,32 @@
 {
     "project": "BPA (Bank of Pending Actions)",
     "version": "1.0.0",
-    "pending_packages": []
+    "pending_packages": [
+        {
+            "uuid": "0bbbb873-a7f1-502e-94a0-85af2677d440",
+            "description": "Package 13/02/2024",
+            "date": "2024-02-13T20:37:42.368420-04:00",
+            "date_of_actions": "13-02-2024 20:38:00",
+            "destiny": "./",
+            "actions": [
+                "users.select().where(users.c.userID == userID).first()"
+            ],
+            "action_type": "GET",
+            "package": {
+                "users": [
+                    {
+                        "id": 1,
+                        "name": "John",
+                        "username": "johnmx"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Yordy",
+                        "username": "elyork"
+                    }
+                ]
+            },
+            "processed": false
+        }
+    ]
 }
