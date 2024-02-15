@@ -3,7 +3,7 @@ functions.py se encargara de almacenar las funciones que tengas conexion directa
 """
 import uuid, json, os, time, pytz
 from datetime import datetime
-from settings import HASHING_UUID, PROJECT_NAME, BPA_VERSION, BPA_NAME
+from settings import HASHING_UUID, PROJECT_NAME, BPA_VERSION, BPA_NAME, BPA_PATH
 from Module.Models.models import PackageModel, PendingPackagesModel, BpaModel, ActionsType, PackageInternalModel
 
 
@@ -12,7 +12,7 @@ time_zone = pytz.timezone('America/Santo_Domingo')
 
 class BpaManagement:
     def __init__(self):
-        self.location_bpa= "Module/Core/Package/bpa.json"
+        self.location_bpa= BPA_PATH
     
     async def config_exists_bpa(self):
         return os.path.exists(self.location_bpa)

@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from Api.Config.methods import version
-from Api.Routers.package import package_router
+from Api.Routers import package, user
 
 
 app = FastAPI(
@@ -10,7 +10,8 @@ app = FastAPI(
 )
 
 
-app.include_router(package_router)
+app.include_router(package.package_router)
+app.include_router(user.user_router)
 
 
 if __name__=="__main__":

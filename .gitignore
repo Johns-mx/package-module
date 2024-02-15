@@ -3,3 +3,4 @@ vEnvPackageModule
 .vscode
 __pycache__
 bpa.json
+unused_code.py

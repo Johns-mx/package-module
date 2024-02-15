@@ -4,7 +4,7 @@ from Module.Core.Package.functions import PackageManagement
 from Api.Schemas.schemas import PackageModel
 
 
-package_router= APIRouter(prefix=f"/api/v{version.major}/package")
+package_router= APIRouter(prefix=f"/api/v{version.major}/package", tags=["Package"])
 
 
 @package_router.get("/get")
