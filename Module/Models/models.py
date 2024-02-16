@@ -14,6 +14,16 @@ class PackageModel(BaseModel):
     actions: list[str]= []
     action_type: str
     package: Optional[dict[str, Any]]= {}
+    
+    class Config:
+        json_schema_extra = {
+            "description": "example_description",
+            "date_of_actions": "13-02-2024 22:10:00",
+            "destiny": "example_destiny",
+            "actions": ["action1", "action2"],
+            "action_type": "example_action_type",
+            "package": {"key1": "value1"}
+        }
 
 
 class PackageInternalModel(PackageModel):

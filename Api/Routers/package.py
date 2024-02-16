@@ -39,6 +39,12 @@ async def register_package(package: PackageModel):
     return response_model_error(status.HTTP_200_OK, False, "Package creado exitosamente.", package_created)
 
 
+@package_router.get("/get_all_sort")
+async def get_all_sort():
+    pack_manage= PackageManagement()
+    structured_packages= await pack_manage.sorting_package_by_date()
+    return structured_packages
+
 @package_router.delete("/delete")
 async def delete_package():
     pass

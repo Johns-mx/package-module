@@ -3,28 +3,34 @@
     "version": "1.0.0",
     "pending_packages": [
         {
-            "uuid": "0bbbb873-a7f1-502e-94a0-85af2677d440",
-            "description": "Package 13/02/2024",
-            "date": "2024-02-13T20:37:42.368420-04:00",
-            "date_of_actions": "13-02-2024 20:38:00",
+            "uuid": "564797ae-3202-51b3-a36a-c247cb055ac1",
+            "description": "Package 16/02/2024",
+            "date": "16-02-2024 11:39:12",
+            "date_of_actions": "16-02-2024 12:00:00",
             "destiny": "./",
             "actions": [
-                "users.select().where(users.c.userID == userID).first()"
+                "action1",
+                "action2"
             ],
             "action_type": "GET",
             "package": {
-                "users": [
-                    {
-                        "id": 1,
-                        "name": "John",
-                        "username": "johnmx"
-                    },
-                    {
-                        "id": 2,
-                        "name": "Yordy",
-                        "username": "elyork"
-                    }
-                ]
+                "key1": "value1"
+            },
+            "processed": false
+        },
+        {
+            "uuid": "809136d7-2ae6-5a3b-9492-83635fb20ec2",
+            "description": "Package prueba 16/02/2024",
+            "date": "16-02-2024 11:41:42",
+            "date_of_actions": "16-02-2024 12:00:00",
+            "destiny": "./",
+            "actions": [
+                "action1",
+                "action2"
+            ],
+            "action_type": "GET",
+            "package": {
+                "key1": "value1"
             },
             "processed": false
         }

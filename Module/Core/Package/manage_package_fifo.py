@@ -1,5 +1,5 @@
 """ Sorting in Output Packages (SOP)
-Los últimos paquetes serán los primeros en salir.
+Los primeros paquetes serán los primeros en salir.
 
 Este modulo se encarga de manejar los paquetes de acuerdo a su fecha de registro en BPA.
 """

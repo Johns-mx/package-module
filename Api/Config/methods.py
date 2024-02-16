@@ -4,13 +4,15 @@ from Api.Schemas.schemas import VersionProject
 
 
 def version_project():
-    version= VersionProject(ver="0.0.7", major=0, minor=0, patch=7)
+    """[main method]: Retorna la version segmentada del software. Se estructura como major, minor, patch."""
+    version= VersionProject(ver="0.0.8", major=0, minor=0, patch=8)
     return version
 version= version_project()
 
 
 #>> Metodo para enviar respuesta ~
 def response_model_error(status_code: str, error: bool, message: str, res, headers=None):
+    """[main method]: Devuelve un JSONResponse en cada solicitud a la API, para mostrar la respuesta al usuario."""
     response_headers = {"Content-Type": "application/json"}
     if headers:
         response_headers.update(headers)
