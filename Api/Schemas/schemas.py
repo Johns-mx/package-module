@@ -57,6 +57,11 @@ class YpwDataTwo(YpwDeveloperModel):
     keyData: str
     Data: str
 
+
+class YpwDataThree(YpwDeveloperModel):
+    Data: str
+
+
 class YpwLogin(BaseModel):
     username: str
     password: str
@@ -78,3 +83,44 @@ class YpwKeys:
 class YpwLoginKeys(BaseModel):
     appConnect: Optional[str]= ""
     keyUser: Optional[str]= ""
+
+
+class YpwModel(BaseModel):
+    keyUser: str
+
+
+class User(BaseModel):
+    username: str
+    email: str | None = None
+    full_name: str | None = None
+    disabled: bool | None = None
+
+
+class UserInDB(User):
+    hashed_password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+
+
+class UserSettingsModel(BaseModel):
+    keyUser: Optional[str]= ""
+    appConnect: Optional[str]= YPW_APP_CONNECT
+    data: Optional[list]= []
+
+
+class AvailableDataKeys(BaseModel):
+    user_data: Union[list, dict, str] = ""
+
+
+class DataModel(BaseModel):
+    idData: int
+    userID: int
+    keyData: str
+    Data: str | list | dict

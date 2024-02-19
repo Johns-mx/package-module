@@ -17,22 +17,6 @@
                 "key1": "value1"
             },
             "processed": false
-        },
-        {
-            "uuid": "809136d7-2ae6-5a3b-9492-83635fb20ec2",
-            "description": "Package prueba 16/02/2024",
-            "date": "16-02-2024 11:41:42",
-            "date_of_actions": "16-02-2024 12:00:00",
-            "destiny": "./",
-            "actions": [
-                "action1",
-                "action2"
-            ],
-            "action_type": "GET",
-            "package": {
-                "key1": "value1"
-            },
-            "processed": false
         }
     ]
 }

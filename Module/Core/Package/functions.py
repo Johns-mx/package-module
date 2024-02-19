@@ -52,9 +52,14 @@ class BpaManagement:
             json.dump(dict(data_json), file, indent=4)
     
     async def remove_pending_packages(self, structured_packages: list, package: PackageInternalModel):
-        """[method]: Elimina el package que se envie por parametro."""
-        structured_packages.remove(dict(package))
-        return structured_packages
+        """[method]: Elimina el package que se envie por parametro. \n- Retorna: tupla( structured_packages, error ) --> \n(list, False | list, True)"""
+        try:
+            structured_packages.remove(dict(package))
+            print(dict(package), "no mames")
+            return structured_packages, False
+        except:
+            print(dict(package), "klk")
+            return structured_packages, True
     
     async def internal_structuring_pending_packages(self):
         """[config]: Pasa el bloque Pending packages (json) a formato de modelo para estructurarlo y poder manejarlo con facilidad. \n- Retorna: tupla[BpaModel, PendingPackagesModel]"""
@@ -71,7 +76,7 @@ class BpaManagement:
         for package in structured_packages.pending_packages:
             if package.processed == True:
                 time.sleep(2)
-                data_packages.pending_packages= await self.remove_pending_packages(data_packages.pending_packages, package)
+                data_packages.pending_packages, error= await self.remove_pending_packages(data_packages.pending_packages, package)
                 
                 with open(self.location_bpa, 'w') as file:
                     json.dump(dict(data_packages), file, indent=4)
@@ -113,6 +118,7 @@ class PackageManagement:
             return None, None, errors
     
     async def processing_packages(self):
+        """[method]: Para procesar todos los packages pendientes en el BPA (Bank of Pending Actions)."""
         await self.bpa_instance.processing_every_package()
     
     async def create_new_package(self, description: str, date_of_actions: str, actions: list, action_type: str, package: dict, destiny: str="./"):
@@ -135,7 +141,9 @@ class PackageManagement:
     async def remove_an_package(self, package: PackageInternalModel):
         """[method]: Elimina el package que se envie por parametro."""
         bpa_json, structured_packages= await self.bpa_instance.internal_structuring_pending_packages()
-        return await self.bpa_instance.remove_pending_packages(structured_packages.pending_packages, package)
+        
+        structured_packages.pending_packages, error = await self.bpa_instance.remove_pending_packages(structured_packages.pending_packages, package)
+        return structured_packages.pending_packages, error
     
     async def sorting_package_by_date(self):
         """[method]: Ordena / sortea los packages de forma ascendente (FIFO: First In, First Out)."""

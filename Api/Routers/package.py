@@ -1,10 +1,12 @@
+import json
 from fastapi import APIRouter, status
-from Api.Config.methods import response_model_error, version
+from Api.Config.methods import response_model_error
 from Module.Core.Package.functions import PackageManagement
 from Api.Schemas.schemas import PackageModel
+from Module.Models.models import PackageInternalModel
 
 
-package_router= APIRouter(prefix=f"/api/v{version.major}/package", tags=["Package"])
+package_router= APIRouter(tags=["Package"])
 
 
 @package_router.get("/get")
@@ -14,11 +16,11 @@ async def get_package():
     await pack_manage.processing_packages()
 
 
-@package_router.get("/get_all")
-async def get_all_package():
-    #>> codigo solo de prueba
+@package_router.get("/get_all_sort")
+async def get_all_sort():
     pack_manage= PackageManagement()
-    return await pack_manage.get_package()
+    structured_packages= await pack_manage.sorting_package_by_date()
+    return structured_packages
 
 
 @package_router.post("/create")
@@ -39,12 +41,13 @@ async def register_package(package: PackageModel):
     return response_model_error(status.HTTP_200_OK, False, "Package creado exitosamente.", package_created)
 
 
-@package_router.get("/get_all_sort")
-async def get_all_sort():
-    pack_manage= PackageManagement()
-    structured_packages= await pack_manage.sorting_package_by_date()
-    return structured_packages
-
 @package_router.delete("/delete")
-async def delete_package():
-    pass
+async def delete_package(package: PackageInternalModel):
+    
+    package_data= PackageInternalModel(uuid=package.uuid, description=package.description, date=package.date, date_of_actions=package.date_of_actions, destiny=package.destiny, actions=package.actions, action_type=package.action_type, package=package.package, processed=package.processed)
+    pack_manage= PackageManagement()
+    structured_packages, error= await pack_manage.remove_an_package(package_data)
+    if error:
+        return response_model_error(status.HTTP_404_NOT_FOUND, True, "Package no existente.", None)
+    return response_model_error(status.HTTP_200_OK, False, "Package eliminado exitosamente.", structured_packages)
+

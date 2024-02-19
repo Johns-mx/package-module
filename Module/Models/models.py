@@ -8,7 +8,7 @@ from uuid import UUID
 class PackageModel(BaseModel):
     uuid: str
     description: str
-    date: Union[datetime, str]
+    date: Optional[str]
     date_of_actions: str
     destiny: Optional[str]
     actions: list[str]= []
