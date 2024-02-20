@@ -2,21 +2,14 @@ import json
 from fastapi import APIRouter, status
 from Api.Config.methods import response_model_error
 from Module.Core.Package.functions import PackageManagement
-from Api.Schemas.schemas import PackageModel
+from Api.Schemas.schemas import PackageModel, TestScheduleModel
 from Module.Models.models import PackageInternalModel
 
 
 package_router= APIRouter(tags=["Package"])
 
 
-@package_router.get("/get")
-async def get_package():
-    #>> codigo solo de prueba
-    pack_manage= PackageManagement()
-    await pack_manage.processing_packages()
 
-
-@package_router.get("/get_all_sort")
 async def get_all_sort():
     pack_manage= PackageManagement()
     structured_packages= await pack_manage.sorting_package_by_date()

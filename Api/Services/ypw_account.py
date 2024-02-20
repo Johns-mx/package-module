@@ -2,7 +2,7 @@ import os
 import requests, json
 from fastapi import status
 from settings import PROJECT_NAME, YPW_URL, YPW_PUBLIC_KEY, YPW_PRIVATE_KEY
-from Api.Schemas.schemas import UserSettingsModel, YpwDataThree, YpwLogin, YpwLoginInternal, YpwMainModel, RequestType, YpwModel, YpwRequestUsers, YpwResponseModel, YpwDeveloperModel, YpwDataOne, YpwKeys, YpwDataTwo
+from Api.Schemas.schemas import UserSettingsModel, YpwDataMain, YpwDataThree, YpwLogin, YpwLoginInternal, YpwMainModel, RequestType, YpwModel, YpwRequestUsers, YpwResponseModel, YpwDeveloperModel, YpwDataOne, YpwKeys, YpwDataTwo
 from Api.Config.methods import response_model_error
 
 
@@ -78,104 +78,51 @@ class UsersManagement:
             json.dump(dict(data_json), file, indent=4)
     
     
-    async def config_ypw_response(self, response: YpwResponseModel):
-        if response is None or response.error:
-            return None
-        return response.res
-    
+    async def config_ypw_process_response(self, response: YpwResponseModel, status_code):
+        if response is None or response.error or status_code not in (status.HTTP_200_OK, status.HTTP_201_CREATED):
+            return None, None
+        return response.res, response.error
     
     async def ypw_get_user(self):
         """✅ Listo!"""
-        data_user= await self.config_read_settings()
-        user_data, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.getUser, YpwMainModel(appConnect=data_user.appConnect, keyUser=data_user.keyUser))
-        
-        if user_data is None:
-            return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-        if user_data.error:
-            return response_model_error(status_response, True, user_data.message, None)
-        return response_model_error(status.HTTP_200_OK, False, "Usuario obtenido exitosamente.", user_data.res)
-    
+        data_settings= await self.config_read_settings()
+        data_response, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.getUser, YpwMainModel(appConnect=data_settings.appConnect, keyUser=data_settings.keyUser))
+        return data_response, status_response
     
     async def ypw_logout_user(self):
         """✅ Listo!"""
-        data_user= await self.config_read_settings()
-        user_data, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.logout, YpwMainModel(keyUser=data_user.keyUser, appConnect=data_user.appConnect))
-        
-        if user_data is None:
-            return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-        if user_data.error:
-            return response_model_error(status_response, True, user_data.message, None)
-        return response_model_error(status.HTTP_200_OK, False, "Session eliminada exitosamente.", None)
+        data_settings= await self.config_read_settings()
+        data_response, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.logout, YpwMainModel(keyUser=data_settings.keyUser, appConnect=data_settings.appConnect))
+        return data_response, status_response
     
     async def ypw_get_data(self, data: YpwDataOne):
         """✅ Listo!"""
-        user_data, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_get, data)
-        
-        if user_data is None:
-            return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-        if user_data.error:
-            return response_model_error(status_response, True, user_data.message, user_data.res)
-        return response_model_error(status.HTTP_200_OK, False, "Data obtenida exitosamente.", user_data.res)
+        data_response, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_get, data)
+        return data_response, status_response
     
-    async def ypw_create_data(self, user_keys: YpwDeveloperModel):
+    async def ypw_create_data(self, payload: YpwDataTwo):
         """✅ Listo!"""
-        klk={"shop_data": "no mames"}
-        
-        payload= YpwDataTwo(public_key=user_keys.public_key, private_key=user_keys.private_key, keyData="YPW_APP_CONNECT", Data=json.dumps(klk))
-        
-        if not payload.keyData or not payload.Data:
-            return response_model_error(status.HTTP_400_BAD_REQUEST, True, "Los campos 'keyData' y 'Data' son obligatorios.", None)
-        
-        user_data, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_create, payload=payload)
-        
-        if user_data is None:
-            return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-        if user_data.error:
-            return response_model_error(status_response, True, user_data.message, None)
-        
-        return response_model_error(status.HTTP_200_OK, False, "Data creada exitosamente.", user_data.res)
+        data_response, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_create, payload=json.dumps(payload))
+        return data_response, status_response
     
-    async def keys_data(self, user: YpwDeveloperModel):
+    async def ypw_keys_data(self, user: YpwDeveloperModel):
         """✅ Listo!"""
-        user_data, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_keys, user)
-        
-        if user_data is None:
-            return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-        if user_data.error:
-            return response_model_error(status_response, True, user_data.message, None)
-        
-        return response_model_error(status.HTTP_200_OK, False, "Data creada exitosamente.", user_data.res)
+        data_response, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_keys, user)
+        return data_response, status_response
     
-    async def update_data(self, user_keys: YpwDeveloperModel):
+    async def ypw_update_data(self, payload: YpwDataTwo):
         """✅ Listo!"""
-        klk={"shop_data": "no mames"}
-        
-        payload= YpwDataTwo(public_key=user_keys.public_key, private_key=user_keys.private_key, keyData="package-module-app", Data=json.dumps(klk))
-        
-        user_data, status_response= await self.ypw_account.ypw_request_data(request_type.PUT, request.data_set, payload=payload)
-        
-        if not payload.keyData or not payload.Data:
-            return response_model_error(status.HTTP_400_BAD_REQUEST, True, "Los campos 'keyData' y 'Data' son obligatorios.", None)
-        if user_data is None:
-            return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-        if user_data.error:
-            return response_model_error(status_response, True, user_data.message, None)
-        
-        return response_model_error(status.HTTP_200_OK, False, "Data actualizada exitosamente.", user_data.res)
+        #if not payload.keyData or not payload.Data:
+            #return response_model_error(status.HTTP_400_BAD_REQUEST, True, "Los campos 'keyData' y 'Data' son obligatorios.", None)
+        data_response, status_response= await self.ypw_account.ypw_request_data(request_type.PUT, request.data_set, payload=json.dumps(payload))
+        return data_response, status_response
     
-    async def delete_data(self, user_keys: YpwDataOne):
+    async def ypw_delete_data(self, user_keys: YpwDataOne):
         """✅ Listo!"""
-        if not user_keys.keyData:
-            return response_model_error(status.HTTP_400_BAD_REQUEST, True, "El campo 'Data' es obligatorio.", None)
-        
-        user_data, status_response= await self.ypw_account.ypw_request_data(request_type.DELETE, request.data_remove, payload=user_keys)
-        
-        if user_data is None:
-            return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-        if user_data.error:
-            return response_model_error(status_response, True, user_data.message, None)
-        
-        return response_model_error(status.HTTP_200_OK, False, "Data eliminada exitosamente.", user_data.res)
+        #if not user_keys.keyData:
+            #return response_model_error(status.HTTP_400_BAD_REQUEST, True, "El campo 'Data' es obligatorio.", None)
+        data_response, status_response= await self.ypw_account.ypw_request_data(request_type.DELETE, request.data_remove, payload=user_keys)
+        return data_response, status_response
 
 
 class DataManagement:

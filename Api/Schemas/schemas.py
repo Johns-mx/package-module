@@ -20,6 +20,10 @@ class PackageModel(BaseModel):
     destiny: Optional[str]= ""
 
 
+class TestScheduleModel(BaseModel):
+    date_of_actions: str
+
+
 class YpwResponseModel(BaseModel):
     error: bool
     message: str
@@ -40,26 +44,29 @@ class YpwRequestUsers(BaseModel):
     data_remove: str= "/account/data/remove"
 
 class YpwMainModel(BaseModel):
-    appConnect: str
-    keyUser: str
+    appConnect: str= ""
+    keyUser: str= ""
 
 
 class YpwDeveloperModel(BaseModel):
-    public_key: Optional[str]= YPW_PUBLIC_KEY
-    private_key: Optional[str]= YPW_PRIVATE_KEY
-
+    public_key: Optional[str]= ""
+    private_key: Optional[str]= ""
+    appConnect: Optional[str]= ""
+    keyUser: Optional[str]= ""
 
 class YpwDataOne(YpwDeveloperModel):
     keyData: str
-
 
 class YpwDataTwo(YpwDeveloperModel):
     keyData: str
     Data: str
 
-
 class YpwDataThree(YpwDeveloperModel):
     Data: str
+
+class YpwDataMain(YpwDeveloperModel):
+    appConnect: str
+    keyUser: str
 
 
 class YpwLogin(BaseModel):
@@ -124,3 +131,5 @@ class DataModel(BaseModel):
     userID: int
     keyData: str
     Data: str | list | dict
+
+

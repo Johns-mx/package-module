@@ -17,7 +17,6 @@ request_type= RequestType()
 @user_router.post("/login")
 async def login_user(user: YpwLogin):
     """✅ Listo!"""
-    
     ypw_account= YpwAccountManagement()
     user_account= UsersManagement()
     
@@ -25,13 +24,11 @@ async def login_user(user: YpwLogin):
     
     if user_data is None:
         return response_model_error(status.HTTP_500_INTERNAL_SERVER_ERROR, True, "Error al procesar la peticion.", None)
-    
     if user_data.error:
         return response_model_error(status_response, True, user_data.message, None)
     
     #>> Se deben guardar los datos del usuario al archivo settings.json que correponde al almacenamiento de datos del usaurio.
     data= UserSettingsModel(keyUser=user_data.res["keyUser"])
     await user_account.update_settings_json(data)
-    
     return response_model_error(status.HTTP_200_OK, False, "Usuario logueado exitosamente.", None)
 

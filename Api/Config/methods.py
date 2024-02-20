@@ -5,7 +5,7 @@ from Api.Schemas.schemas import VersionProject
 
 def version_project():
     """[main method]: Retorna la version segmentada del software. Se estructura como major, minor, patch."""
-    version= VersionProject(ver="0.0.9", major=0, minor=0, patch=9)
+    version= VersionProject(ver="0.0.10", major=0, minor=0, patch=10)
     return version
 version= version_project()
 

@@ -5,6 +5,7 @@ import uuid, json, os, time, pytz
 from datetime import datetime
 from settings import HASHING_UUID, PROJECT_NAME, BPA_VERSION, BPA_NAME, BPA_PATH
 from Module.Models.models import PackageModel, PendingPackagesModel, BpaModel, ActionsType, PackageInternalModel
+from Module.Core.Schedule.schedule_functions import ScheduleManagement
 
 
 time_zone = pytz.timezone('America/Santo_Domingo')
@@ -69,18 +70,6 @@ class BpaManagement:
         ])
         return data_json, structured_packages
     
-    async def processing_every_package(self):
-        """[method]: Metodo principal para procesar cada package dentro del BPA."""
-        data_packages, structured_packages = await self.internal_structuring_pending_packages()
-        
-        for package in structured_packages.pending_packages:
-            if package.processed == True:
-                time.sleep(2)
-                data_packages.pending_packages, error= await self.remove_pending_packages(data_packages.pending_packages, package)
-                
-                with open(self.location_bpa, 'w') as file:
-                    json.dump(dict(data_packages), file, indent=4)
-    
     async def sorting_out_packages(self):
         """ LIFO (Last In First Out) """
 
@@ -88,6 +77,7 @@ class BpaManagement:
 class PackageManagement:
     def __init__(self):
         self.bpa_instance= BpaManagement()
+        self.schedule_instance= ScheduleManagement()
         self.description: str
         self.date: datetime
         self.destiny: str
@@ -117,9 +107,31 @@ class PackageManagement:
             errors["errors"]= True
             return None, None, errors
     
-    async def processing_packages(self):
-        """[method]: Para procesar todos los packages pendientes en el BPA (Bank of Pending Actions)."""
-        await self.bpa_instance.processing_every_package()
+    
+    async def processing_every_package(self):
+        """[method]: Metodo principal para procesar cada package pendiente en el BPA (Bank of Pending Actions)."""
+        data_packages, structured_packages = await self.bpa_instance.internal_structuring_pending_packages()
+        
+        for package in structured_packages.pending_packages:
+            date_object, formated_date, errors= await self.config_format_date_of_actions(package.date_of_actions)
+            
+            #>> si la fecha del package es menor entonces ya el package fue procesado, y devuelve False, por lo que no entra al bloque.
+            if self.compare_date_of_actions(date_object):
+                #>> si el package no se ha procesado entonces se inicia su procesamiento, valga la redundancia.
+                await self.processing_package(package)
+            
+            #>> como el package fue procesado entonces se actualiza a True.
+            package.processed= True
+            if package.processed:
+                await self.schedule_instance.remove_job_by_id(package.uuid) #>> se elimina la tarea del scheduler.
+                data_packages.pending_packages, error= await self.bpa_instance.remove_pending_packages(data_packages.pending_packages, package) #>> se elimina el package del BPA.
+                
+                with open(BPA_PATH, 'w') as file:
+                    json.dump(dict(data_packages), file, indent=4)
+    
+    async def processing_package(self, package: PackageInternalModel):
+        """[method]: Para procesar el package pendiente en turno."""
+        pass
     
     async def create_new_package(self, description: str, date_of_actions: str, actions: list, action_type: str, package: dict, destiny: str="./"):
         """[method]: Crea un nuevo package, luego lo inserta directamente en el BPA (Bank of Pending Actions)."""
