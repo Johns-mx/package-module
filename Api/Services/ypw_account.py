@@ -1,9 +1,9 @@
-import os
-import requests, json
+import requests, json, os
 from fastapi import status
-from settings import PROJECT_NAME, YPW_URL, YPW_PUBLIC_KEY, YPW_PRIVATE_KEY
+from Module.Core.Package.functions import BpaManagement
+from Module.Core.Schedule.schedule_functions import ScheduleManagement
+from settings import BPA_PATH, PROJECT_NAME, YPW_URL, YPW_PUBLIC_KEY, YPW_PRIVATE_KEY, SETTINGS_PATH
 from Api.Schemas.schemas import UserSettingsModel, YpwDataMain, YpwDataThree, YpwLogin, YpwLoginInternal, YpwMainModel, RequestType, YpwModel, YpwRequestUsers, YpwResponseModel, YpwDeveloperModel, YpwDataOne, YpwKeys, YpwDataTwo
-from Api.Config.methods import response_model_error
 
 
 request= YpwRequestUsers()
@@ -45,7 +45,27 @@ class YpwAccountManagement:
 class UsersManagement:
     def __init__(self):
         self.ypw_account= YpwAccountManagement()
-        self.location_settings= "/PackageModule/settings.json"
+        self.schedule_instance= ScheduleManagement()
+        self.bpa_instance= BpaManagement()
+        self.location_settings: str= SETTINGS_PATH
+    
+    async def startup_all_internal_process(self):
+        """[config | method (ENCIENDE)]: Crea los archivos settings y bpa. Inicia los procesos de apscheduler."""
+        await self.schedule_instance.change_scheduler_status(True)
+        bpa= await self.bpa_instance.config_read_bpa()
+    
+    async def shutdown_all_internal_process(self):
+        """[config | method (APAGAR)]: Elimina los archivos settings y bpa. Cancela los procesos de apscheduler."""
+        await self.schedule_instance.change_scheduler_status(False)
+        os.remove(self.location_settings)
+        os.remove(BPA_PATH)
+    
+    async def ypw_already_logged_in(self):
+        """[method]: Retorna True si el usuario ya esta logueado, de lo contrario, False."""
+        data_response, status_response= await self.ypw_get_user()
+        if status_response not in [status.HTTP_200_OK, status.HTTP_201_CREATED]:
+            return False
+        return True
     
     async def config_read_settings(self):
         """[config]: Lee el archivo settings.json si existe, o lo crea si es necesario."""
@@ -84,13 +104,13 @@ class UsersManagement:
         return response.res, response.error
     
     async def ypw_get_user(self):
-        """✅ Listo!"""
+        """✅ Listo! [method]: Obtiene la session del usuario guardada en settings.json y realizar una peticion a db para obtener los datos del usuario."""
         data_settings= await self.config_read_settings()
         data_response, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.getUser, YpwMainModel(appConnect=data_settings.appConnect, keyUser=data_settings.keyUser))
         return data_response, status_response
     
     async def ypw_logout_user(self):
-        """✅ Listo!"""
+        """✅ Listo! [method]: Obtiene la session del usuario guardada en settings.json, para proceder a cerrar la session guardada."""
         data_settings= await self.config_read_settings()
         data_response, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.logout, YpwMainModel(keyUser=data_settings.keyUser, appConnect=data_settings.appConnect))
         return data_response, status_response

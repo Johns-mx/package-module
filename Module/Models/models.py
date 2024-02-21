@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Callable
 from datetime import datetime
 from pydantic import BaseModel, Field
 from settings import BPA_VERSION, BPA_NAME
@@ -28,6 +28,12 @@ class PackageModel(BaseModel):
 
 class PackageInternalModel(PackageModel):
     processed: bool= False
+
+
+class PackageScheduleModel(BaseModel):
+    programmed_task: Any
+    id_task: str
+    date_object: datetime
 
 
 class PendingPackagesModel(BaseModel):

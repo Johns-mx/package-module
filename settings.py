@@ -8,6 +8,7 @@ HASHING_UUID=os.getenv("UUID_HASHING")
 BPA_NAME=os.getenv("NAME_BPA")
 BPA_VERSION=os.getenv("VERSION_BPA")
 BPA_PATH=os.getenv("PATH_BPA")
+SETTINGS_PATH=os.getenv("PATH_SETTINGS")
 
 YPW_URL=os.getenv("YPW_URL_API")
 YPW_APP_CONNECT=os.getenv("YPW_APP_CONNECT")

@@ -4,11 +4,15 @@ functions.py se encargara de almacenar las funciones que tengas conexion directa
 import uuid, json, os, time, pytz
 from datetime import datetime
 from settings import HASHING_UUID, PROJECT_NAME, BPA_VERSION, BPA_NAME, BPA_PATH
-from Module.Models.models import PackageModel, PendingPackagesModel, BpaModel, ActionsType, PackageInternalModel
+from Module.Models.models import PackageModel, PendingPackagesModel, BpaModel, ActionsType, PackageInternalModel, PackageScheduleModel
 from Module.Core.Schedule.schedule_functions import ScheduleManagement
 
 
 time_zone = pytz.timezone('America/Santo_Domingo')
+
+
+async def tarea_programada():
+    print("Esta funcion fue programada.")
 
 
 class BpaManagement:
@@ -116,9 +120,10 @@ class PackageManagement:
             date_object, formated_date, errors= await self.config_format_date_of_actions(package.date_of_actions)
             
             #>> si la fecha del package es menor entonces ya el package fue procesado, y devuelve False, por lo que no entra al bloque.
-            if self.compare_date_of_actions(date_object):
+            if await self.compare_date_of_actions(date_object):
                 #>> si el package no se ha procesado entonces se inicia su procesamiento, valga la redundancia.
-                await self.processing_package(package)
+                package_schedule= PackageScheduleModel(programmed_task=tarea_programada, id_task=package.uuid, date_object=date_object)
+                await self.processing_package(package_schedule, package)
             
             #>> como el package fue procesado entonces se actualiza a True.
             package.processed= True
@@ -129,8 +134,11 @@ class PackageManagement:
                 with open(BPA_PATH, 'w') as file:
                     json.dump(dict(data_packages), file, indent=4)
     
-    async def processing_package(self, package: PackageInternalModel):
+    async def processing_package(self, package_schedule: PackageScheduleModel, package: PackageInternalModel):
         """[method]: Para procesar el package pendiente en turno."""
+        await self.schedule_instance.add_job(package_schedule)
+    
+    async def programmer_task(self):
         pass
     
     async def create_new_package(self, description: str, date_of_actions: str, actions: list, action_type: str, package: dict, destiny: str="./"):
@@ -143,6 +151,7 @@ class PackageManagement:
             package=package
         )
         await self.bpa_instance.update_pending_packages(new_package)
+        #await self.processing_every_package()
         return new_package
     
     async def get_packages(self):
