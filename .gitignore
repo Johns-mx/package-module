@@ -1,7 +1,9 @@
-vEnvPackageModule
+vEnvPackageModule/
 .env
 .vscode
 __pycache__
 bpa.json
 unused_code.py
 settings.json
+Testing
+Database

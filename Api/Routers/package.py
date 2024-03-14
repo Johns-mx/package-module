@@ -34,7 +34,7 @@ async def register_package(package: PackageModel):
         return response_model_error(status.HTTP_400_BAD_REQUEST, True, "La fecha de acciones debe ser mayor a la fecha actual.", None)
     
     package_created = await pack_manage.create_new_package(
-        package.description, formated_date, package.actions,
+        package.description, formated_date, date_object, package.actions,
         package.action_type, package.package, package.destiny
     )
     #await pack_manage.processing_every_package()

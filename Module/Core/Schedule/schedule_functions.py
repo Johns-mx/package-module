@@ -10,7 +10,6 @@ from Module.Models.models import PackageScheduleModel
 
 scheduler = AsyncIOScheduler()
 
-
 class ScheduleManagement:
     def __init__(self):
         self.active: bool= False
@@ -27,11 +26,11 @@ class ScheduleManagement:
         self.active= status
         await self.config_start_or_shutdown_scheduler()
     
-    async def set_date(self):
+    async def schedule_set_date(self):
         """[advanced method]: Metodo que se encargara de crear la tarea segun el usuario."""
         pass
     
-    async def add_job(self, package_schedule: PackageScheduleModel):
+    async def schedule_add_job(self, package_schedule: PackageScheduleModel):
         """[method] Agrega el job (tarea) para que se ejecute en una fecha específica."""
         if self.active:
             scheduler.add_job(package_schedule.programmed_task, "date", run_date=package_schedule.date_object, id=package_schedule.id_task)
@@ -40,4 +39,6 @@ class ScheduleManagement:
         """[method]: Elimina el job (tarea) de acuerdo a su id (uuid del package) proporcionado."""
         if self.active:
             scheduler.remove_job(id_task)
-    
+
+#>> Instancia / objeto general de ScheduleManagement()
+schedule_instance= ScheduleManagement()

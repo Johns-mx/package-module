@@ -1,7 +1,7 @@
 import requests, json, os
 from fastapi import status
 from Module.Core.Package.functions import BpaManagement
-from Module.Core.Schedule.schedule_functions import ScheduleManagement
+from Module.Core.Schedule.schedule_functions import schedule_instance
 from settings import BPA_PATH, PROJECT_NAME, YPW_URL, YPW_PUBLIC_KEY, YPW_PRIVATE_KEY, SETTINGS_PATH
 from Api.Schemas.schemas import UserSettingsModel, YpwDataMain, YpwDataThree, YpwLogin, YpwLoginInternal, YpwMainModel, RequestType, YpwModel, YpwRequestUsers, YpwResponseModel, YpwDeveloperModel, YpwDataOne, YpwKeys, YpwDataTwo
 
@@ -45,21 +45,22 @@ class YpwAccountManagement:
 class UsersManagement:
     def __init__(self):
         self.ypw_account= YpwAccountManagement()
-        self.schedule_instance= ScheduleManagement()
         self.bpa_instance= BpaManagement()
         self.location_settings: str= SETTINGS_PATH
     
     async def startup_all_internal_process(self):
         """[config | method (ENCIENDE)]: Crea los archivos settings y bpa. Inicia los procesos de apscheduler."""
-        await self.schedule_instance.change_scheduler_status(True)
+        await schedule_instance.change_scheduler_status(True)
         bpa= await self.bpa_instance.config_read_bpa()
     
+
     async def shutdown_all_internal_process(self):
         """[config | method (APAGAR)]: Elimina los archivos settings y bpa. Cancela los procesos de apscheduler."""
-        await self.schedule_instance.change_scheduler_status(False)
+        await schedule_instance.change_scheduler_status(False)
         os.remove(self.location_settings)
         os.remove(BPA_PATH)
     
+
     async def ypw_already_logged_in(self):
         """[method]: Retorna True si el usuario ya esta logueado, de lo contrario, False."""
         data_response, status_response= await self.ypw_get_user()
@@ -67,6 +68,7 @@ class UsersManagement:
             return False
         return True
     
+
     async def config_read_settings(self):
         """[config]: Lee el archivo settings.json si existe, o lo crea si es necesario."""
         settings_content = {
@@ -89,6 +91,7 @@ class UsersManagement:
             settings_dict = json.load(file)
         return UserSettingsModel(**settings_dict)
     
+
     async def update_settings_json(self, data: UserSettingsModel):
         """[method]: Actualizar settings.json"""
         data_json = await self.config_read_settings()
@@ -103,39 +106,46 @@ class UsersManagement:
             return None, None
         return response.res, response.error
     
+
     async def ypw_get_user(self):
         """✅ Listo! [method]: Obtiene la session del usuario guardada en settings.json y realizar una peticion a db para obtener los datos del usuario."""
         data_settings= await self.config_read_settings()
         data_response, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.getUser, YpwMainModel(appConnect=data_settings.appConnect, keyUser=data_settings.keyUser))
         return data_response, status_response
     
+
     async def ypw_logout_user(self):
         """✅ Listo! [method]: Obtiene la session del usuario guardada en settings.json, para proceder a cerrar la session guardada."""
         data_settings= await self.config_read_settings()
         data_response, status_response= await self.ypw_account.ypw_request_user(request_type.POST, request.logout, YpwMainModel(keyUser=data_settings.keyUser, appConnect=data_settings.appConnect))
         return data_response, status_response
     
+
     async def ypw_get_data(self, data: YpwDataOne):
         """✅ Listo!"""
         data_response, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_get, data)
         return data_response, status_response
     
+
     async def ypw_create_data(self, payload: YpwDataTwo):
         """✅ Listo!"""
         data_response, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_create, payload=json.dumps(payload))
         return data_response, status_response
     
+
     async def ypw_keys_data(self, user: YpwDeveloperModel):
         """✅ Listo!"""
         data_response, status_response= await self.ypw_account.ypw_request_data(request_type.POST, request.data_keys, user)
         return data_response, status_response
     
+
     async def ypw_update_data(self, payload: YpwDataTwo):
         """✅ Listo!"""
         #if not payload.keyData or not payload.Data:
             #return response_model_error(status.HTTP_400_BAD_REQUEST, True, "Los campos 'keyData' y 'Data' son obligatorios.", None)
         data_response, status_response= await self.ypw_account.ypw_request_data(request_type.PUT, request.data_set, payload=json.dumps(payload))
         return data_response, status_response
+    
     
     async def ypw_delete_data(self, user_keys: YpwDataOne):
         """✅ Listo!"""

@@ -5,7 +5,7 @@ import uuid, json, os, time, pytz
 from datetime import datetime
 from settings import HASHING_UUID, PROJECT_NAME, BPA_VERSION, BPA_NAME, BPA_PATH
 from Module.Models.models import PackageModel, PendingPackagesModel, BpaModel, ActionsType, PackageInternalModel, PackageScheduleModel
-from Module.Core.Schedule.schedule_functions import ScheduleManagement
+from Module.Core.Schedule.schedule_functions import schedule_instance
 
 
 time_zone = pytz.timezone('America/Santo_Domingo')
@@ -75,13 +75,13 @@ class BpaManagement:
         return data_json, structured_packages
     
     async def sorting_out_packages(self):
-        """ LIFO (Last In First Out) """
+        """ FIFO (First In First Out) """
 
 
 class PackageManagement:
     def __init__(self):
         self.bpa_instance= BpaManagement()
-        self.schedule_instance= ScheduleManagement()
+        #self.schedule_instance= ScheduleManagement()
         self.description: str
         self.date: datetime
         self.destiny: str
@@ -128,20 +128,24 @@ class PackageManagement:
             #>> como el package fue procesado entonces se actualiza a True.
             package.processed= True
             if package.processed:
-                await self.schedule_instance.remove_job_by_id(package.uuid) #>> se elimina la tarea del scheduler.
+                await schedule_instance.remove_job_by_id(package.uuid) #>> se elimina la tarea del scheduler.
                 data_packages.pending_packages, error= await self.bpa_instance.remove_pending_packages(data_packages.pending_packages, package) #>> se elimina el package del BPA.
                 
                 with open(BPA_PATH, 'w') as file:
                     json.dump(dict(data_packages), file, indent=4)
     
-    async def processing_package(self, package_schedule: PackageScheduleModel, package: PackageInternalModel):
+    async def processing_package(self, package_schedule: PackageScheduleModel, package: PackageInternalModel= None):
         """[method]: Para procesar el package pendiente en turno."""
-        await self.schedule_instance.add_job(package_schedule)
+        package_schedule.programmed_task
+        await schedule_instance.schedule_add_job(package_schedule)
     
     async def programmer_task(self):
         pass
     
-    async def create_new_package(self, description: str, date_of_actions: str, actions: list, action_type: str, package: dict, destiny: str="./"):
+    ##>> puedo conectarme a la base de datos del usuario y que el usuario al select, insert, remove, update.
+    
+    
+    async def create_new_package(self, description: str, date_of_actions: str, date_of_actions_object: datetime, actions: list, action_type: str, package: dict, destiny: str="./"):
         """[method]: Crea un nuevo package, luego lo inserta directamente en el BPA (Bank of Pending Actions)."""
         date=datetime.now(time_zone).strftime(self.format_date_of_actions)
         new_package= PackageInternalModel(
@@ -151,7 +155,8 @@ class PackageManagement:
             package=package
         )
         await self.bpa_instance.update_pending_packages(new_package)
-        #await self.processing_every_package()
+        job_package= PackageScheduleModel(programmed_task=tarea_programada, id_task=new_package.uuid, date_object=date_of_actions_object)
+        await self.processing_package(job_package, new_package)
         return new_package
     
     async def get_packages(self):
@@ -171,9 +176,4 @@ class PackageManagement:
         bpa_json, structured_packages = await self.bpa_instance.internal_structuring_pending_packages()
         structured_packages.pending_packages.sort(key=lambda x: x.date)
         return structured_packages
-
-
-class DatabaseManagement:
-    def __init__(self):
-        self.type_db= "MySQL"
 
